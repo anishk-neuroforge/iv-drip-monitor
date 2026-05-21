@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What if a camera could watch the drip — so nurses don't have to?</title>
+  <meta name="description" content="An early-stage idea: using computer vision and edge hardware to automate IV drip monitoring in hospitals, reducing repetitive workload on nurses." />
+  <!-- Open Graph (LinkedIn / Twitter previews) -->
+  <meta property="og:title" content="What if a camera could watch the drip — so nurses don't have to?" />
+  <meta property="og:description" content="An early-stage ML idea for IV drip monitoring — reducing repetitive manual checks in hospitals." />
+  <meta property="og:type" content="article" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+  <style>
+    :root {
+      --green:       #16a34a;
+      --green-bg:    #f0fdf4;
+      --green-border:#86efac;
+      --blue:        #2563eb;
+      --amber:       #d97706;
+      --text-1:      #111827;
+      --text-2:      #4b5563;
+      --text-3:      #9ca3af;
+      --border-1:    #e5e7eb;
+      --border-2:    #d1d5db;
+      --surface:     #f9fafb;
+      --white:       #ffffff;
+      --r-md:        8px;
+      --r-lg:        14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--white);
+      color: var(--text-1);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1.5rem 6rem;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border-1);
+      margin-bottom: 2.5rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: var(--green-bg);
+      padding: 4px 13px;
+      border-radius: 20px;
+      margin-bottom: 1.4rem;
+    }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 2.1rem;
+      font-weight: 400;
+      line-height: 1.25;
+      color: var(--text-1);
+      margin-bottom: 1rem;
+    }
+    h1 em { font-style: italic; color: var(--text-2); }
+
+    .byline {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .byline span { display: flex; align-items: center; gap: 5px; }
+
+    /* ── Section ── */
+    .sec { margin: 2.5rem 0; }
+
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-1);
+    }
+    .sec-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      min-width: 68px;
+    }
+    h2 {
+      font-family: 'Lora', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--text-1);
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: var(--text-2);
+      line-height: 1.85;
+      margin-bottom: 0.9rem;
+    }
+
+    /* ── Story box ── */
+    .story-box {
+      background: var(--surface);
+      border-radius: var(--r-lg);
+      padding: 1.5rem 1.75rem;
+      margin: 1.25rem 0;
+    }
+    .story-box p {
+      color: var(--text-1) !important;
+      font-family: 'Lora', serif;
+      font-size: 1.05rem;
+      font-style: italic;
+      margin: 0 0 0.7rem;
+    }
+    .story-box p:last-child { margin-bottom: 0; }
+    .story-box .q {
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--text-1);
+      margin: 0.75rem 0 0.5rem;
+      padding-left: 0.85rem;
+      border-left: 2px solid var(--border-2);
+    }
+
+    /* ── Pull quote ── */
+    .pull {
+      font-family: 'Lora', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--text-1);
+      border-left: 2px solid var(--green-border);
+      padding: 0.75rem 0 0.75rem 1.3rem;
+      margin: 1.5rem 0;
+      line-height: 1.55;
+    }
+
+    /* ── Cause / benefit list ── */
+    .cause-list { list-style: none; padding: 0; margin: 1rem 0; }
+    .cause-list li {
+      display: flex;
+      gap: 13px;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border-1);
+      align-items: flex-start;
+    }
+    .cause-list li:last-child { border-bottom: none; }
+    .cause-list i { font-size: 17px; color: var(--text-2); margin-top: 2px; flex-shrink: 0; }
+    .cause-list .ct { font-size: 13px; font-weight: 500; color: var(--text-1); margin-bottom: 3px; }
+    .cause-list .cd { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+    /* ── Pipeline ── */
+    .pipe {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 1.25rem 0;
+    }
+    .ps {
+      background: var(--surface);
+      border: 1px solid var(--border-1);
+      border-radius: var(--r-md);
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-1);
+      white-space: nowrap;
+    }
+    .pa { font-size: 14px; color: var(--text-3); }
+
+    /* ── Approach cards ── */
+    .approach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1rem 0; }
+    .approach-card {
+      border: 1px solid var(--border-1);
+      border-radius: var(--r-md);
+      padding: 1rem 1.1rem;
+    }
+    .approach-card .at {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-1);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .approach-card .ad { font-size: 12px; color: var(--text-2); line-height: 1.65; }
+
+    /* ── Stack pills ── */
+    .stack-note { font-size: 0.88rem; color: var(--text-2); font-style: italic; margin: 0.75rem 0 0.6rem; }
+    .stack-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0.5rem 0 1rem; }
+    .stack-pill {
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    /* ── Challenge list ── */
+    .challenge-list { list-style: none; padding: 0; margin: 1rem 0; }
+    .challenge-list li {
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-1);
+      font-size: 0.92rem;
+      color: var(--text-2);
+      line-height: 1.7;
+    }
+    .challenge-list li:last-child { border-bottom: none; }
+    .challenge-list i { font-size: 16px; color: var(--amber); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border-1); margin: 2.5rem 0; }
+
+    /* ── Closing ── */
+    .closing {
+      border: 1px solid var(--border-2);
+      border-radius: var(--r-lg);
+      padding: 2.25rem 2rem;
+      margin-top: 3rem;
+      text-align: center;
+    }
+    .closing h3 {
+      font-family: 'Lora', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+    .closing p { font-size: 0.9rem; color: var(--text-2); margin-bottom: 1.25rem; }
+
+    .cta-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--green);
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      padding: 9px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .cta:hover { opacity: 0.8; }
+    .cta-gh {
+      color: var(--text-1);
+      background: var(--surface);
+      border-color: var(--border-2);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      h1 { font-size: 1.7rem; }
+      .approach-grid { grid-template-columns: 1fr; }
+      .byline { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="tag"><i class="ti ti-bulb"></i> An idea in progress</div>
+    <h1>What if a camera could watch the drip <em>so nurses don't have to?</em></h1>
+    <div class="byline">
+      <span><i class="ti ti-calendar" style="font-size:14px"></i> May 2026</span>
+      <span><i class="ti ti-clock" style="font-size:14px"></i> 6 min read</span>
+      <span><i class="ti ti-tag" style="font-size:14px"></i> ML · Healthcare · Idea stage</span>
+    </div>
+  </div>
+
+  <!-- The Spark -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">The spark</span>
+      <h2>Why I started thinking about this</h2>
+    </div>
+    <div class="story-box">
+      <p>I was at a hospital recently and I noticed something small — a nurse walking from bed to bed, glancing at each glucose bottle, then moving on. She did this round multiple times.</p>
+      <p>It was repetitive. Predictable. And entirely manual.</p>
+      <p class="q">Can computer vision monitor a drip bottle automatically?</p>
+      <p class="q">Could a simple ML model reduce this kind of repetitive workload in hospitals?</p>
+      <p>I started sketching possible approaches. This post is where that thinking is right now — not a finished system, but an idea worth sharing and exploring.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- The Problem -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">The problem</span>
+      <h2>A small gap with serious consequences</h2>
+    </div>
+    <p>In hospitals, patients receiving intravenous therapy — glucose, saline, medications — depend on those drip bottles staying monitored. When one runs empty and isn't replaced promptly, it can delay treatment, cause discomfort, and in serious cases allow air into the line, which is dangerous.</p>
+    <div class="pull">Hospitals often rely on periodic manual checks, creating delays and monitoring overhead — especially in wards where nurses manage many patients at once.</div>
+    <p>This isn't about negligence. In busy wards, a single nurse may be responsible for a large number of patients simultaneously. Under that kind of load, manual IV monitoring becomes an unrealistic expectation.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Root Causes -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">Root causes</span>
+      <h2>Why the current system struggles</h2>
+    </div>
+    <p>The monitoring gap isn't caused by one thing. It's a combination of pressures that compound each other.</p>
+    <ul class="cause-list">
+      <li>
+        <i class="ti ti-users"></i>
+        <div><div class="ct">High patient-to-nurse ratios</div><div class="cd">Frequent manual checks become physically unsustainable when one nurse covers many beds.</div></div>
+      </li>
+      <li>
+        <i class="ti ti-eye-off"></i>
+        <div><div class="ct">No remote visibility</div><div class="cd">Nurses can't see drip status from the station — each check requires physically going to the bed.</div></div>
+      </li>
+      <li>
+        <i class="ti ti-bell-off"></i>
+        <div><div class="ct">No proactive alert mechanism</div><div class="cd">There's nothing in a standard IV setup that flags "this bottle is almost empty" before it happens.</div></div>
+      </li>
+      <li>
+        <i class="ti ti-activity"></i>
+        <div><div class="ct">Variable drip rates</div><div class="cd">Different patients have different flow rates, making it hard to predict when any given bottle will run out.</div></div>
+      </li>
+      <li>
+        <i class="ti ti-brain"></i>
+        <div><div class="ct">Cognitive overload</div><div class="cd">Nurses managing critical tasks in parallel are prone to delays on "routine" checks — not out of carelessness, but capacity.</div></div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- The Idea -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">The idea</span>
+      <h2>How computer vision could help</h2>
+    </div>
+    <p>One possible implementation could use a small camera mounted near each IV stand, paired with a computer vision model running on low-cost edge hardware. The model would estimate the fluid level in the bottle in real time, track how fast the drip is falling, and trigger an alert to the nurse's phone or ward dashboard when the level drops below a threshold.</p>
+    <p>A conceptual pipeline might look like this:</p>
+    <div class="pipe">
+      <div class="ps"><i class="ti ti-camera"></i> Camera captures bottle</div>
+      <span class="pa">→</span>
+      <div class="ps">CV model estimates level</div>
+      <span class="pa">→</span>
+      <div class="ps">Drip rate tracked</div>
+      <span class="pa">→</span>
+      <div class="ps">Alert sent at threshold</div>
+    </div>
+    <p>There are at least two broad approaches worth exploring:</p>
+    <div class="approach-grid">
+      <div class="approach-card">
+        <div class="at"><i class="ti ti-camera" style="font-size:16px;color:#2563eb"></i> Vision-based</div>
+        <div class="ad">A camera + CV model detects the fluid line visually. Works without modifying the existing IV hardware at all.</div>
+      </div>
+      <div class="approach-card">
+        <div class="at"><i class="ti ti-weight" style="font-size:16px;color:#16a34a"></i> Weight-based</div>
+        <div class="ad">A load cell under the bottle measures decreasing weight as fluid drips. Simpler and more precise, but requires a physical attachment.</div>
+      </div>
+    </div>
+    <p class="stack-note">A possible tech stack to explore (not finalised):</p>
+    <div class="stack-list">
+      <div class="stack-pill">OpenCV</div>
+      <div class="stack-pill">YOLO (object detection)</div>
+      <div class="stack-pill">PyTorch / TFLite</div>
+      <div class="stack-pill">Raspberry Pi</div>
+      <div class="stack-pill">Firebase alerts</div>
+      <div class="stack-pill">Roboflow (labelling)</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Benefits -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">Benefits</span>
+      <h2>What this could change</h2>
+    </div>
+    <p>If this approach works well in practice, the potential benefits extend beyond just knowing when a bottle is empty.</p>
+    <ul class="cause-list">
+      <li>
+        <i class="ti ti-heart-handshake"></i>
+        <div><div class="ct">Uninterrupted patient care</div><div class="cd">Alerts arrive before the bottle is empty — giving nurses time to respond rather than react.</div></div>
+      </li>
+      <li>
+        <i class="ti ti-stethoscope"></i>
+        <div><div class="ct">Nurses freed for higher-value work</div><div class="cd">Removing repetitive visual checks could meaningfully reduce cognitive load across a shift.</div></div>
+      </li>
+      <li>
+        <i class="ti ti-coin"></i>
+        <div><div class="ct">Low-cost deployment potential</div><div class="cd">The hardware (camera + single-board computer) could be inexpensive enough for resource-constrained hospitals.</div></div>
+      </li>
+      <li>
+        <i class="ti ti-chart-bar"></i>
+        <div><div class="ct">Data as a side benefit</div><div class="cd">Every drip event logged creates a record — useful for ward management, staffing, and resource planning.</div></div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Open Questions -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">Open questions</span>
+      <h2>Challenges I still need to solve</h2>
+    </div>
+    <p>I want to be upfront: this is an early-stage idea, not a working system. There are real technical and practical challenges ahead.</p>
+    <ul class="challenge-list">
+      <li><i class="ti ti-droplet"></i><span>Transparent bottles — fluid levels in clear plastic or glass are harder for a model to detect reliably than in coloured containers.</span></li>
+      <li><i class="ti ti-sun"></i><span>Lighting variation — hospital environments have inconsistent lighting: fluorescent overhead, natural light from windows, dim night settings. The model needs to handle all of these.</span></li>
+      <li><i class="ti ti-package"></i><span>Bottle shape diversity — IV bags and bottles come in many shapes and sizes across manufacturers. A model trained on one type may not generalise well.</span></li>
+      <li><i class="ti ti-bell"></i><span>False alarms — too many incorrect alerts quickly erodes nurse trust in the system. Threshold tuning and false-positive rate matter a lot here.</span></li>
+      <li><i class="ti ti-building-hospital"></i><span>Real-world deployment — hospital environments have regulations, hygiene requirements, and workflow constraints that a lab prototype won't surface.</span></li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- What's Next -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">What's next</span>
+      <h2>Where this idea goes from here</h2>
+    </div>
+    <p>Right now I'm in the exploration phase — reading related work, thinking through approaches, and sketching what a prototype might look like. The plan is to start with a simple proof-of-concept: a camera watching a water bottle at different fill levels, and a model learning to estimate how full it is.</p>
+    <p>From there, the real work begins — collecting meaningful data, handling edge cases, and testing whether this holds up outside a controlled setting.</p>
+    <p>I'll be sharing progress here as the project develops. If you've worked on similar problems — IV monitoring, medical CV, edge deployment in clinical settings — I'd genuinely like to hear from you.</p>
+  </div>
+
+  <!-- Closing -->
+  <div class="closing">
+    <h3>This is an idea worth building.</h3>
+    <p>Not because it's technically clever — but because the problem is real, the nurses are overworked, and the patients deserve better than periodic manual checks.</p>
+    <div class="cta-row">
+      <a class="cta" href="https://github.com/anishk-neuroforge/iv-drip-monitor" target="_blank" rel="noopener">
+        <i class="ti ti-brand-github"></i> View on GitHub
+      </a>
+      <a class="cta cta-gh" href="https://linkedin.com/in/anishkumar25" target="_blank" rel="noopener">
+        <i class="ti ti-brand-linkedin"></i> Connect on LinkedIn
+      </a>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+</body>
+</html>

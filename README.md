@@ -96,7 +96,7 @@ I'll share progress here as the project develops.
 
 If you've worked on similar problems — IV monitoring, medical computer vision, edge deployment in clinical settings — I'd genuinely like to hear from you.
 
-- 📖 [Read the full blog post](https://chief-anishkumar-ai.me/iv-drip-monitor/)
+- 📖 [Read the full blog post]([https://chief-anishkumar-ai.me/iv-drip-monitor/](https://ivdrip.chief-anishkumar-ai.me/))
 - 💼 [Connect on LinkedIn](https://linkedin.com/in/anishkumar25)
 
 ---
